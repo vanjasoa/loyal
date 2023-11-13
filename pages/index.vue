@@ -1,22 +1,22 @@
 <template>
     <div>
         <p>
-            {{ items }}
+            {{ user }}
         </p>
 
-        <button @click="fetchArticles">Refresh</button>
+        <button @click="logout">logout</button>
+        <button @click="onSubmit">login</button>
     </div>
 </template>
 
 <script setup>
 
-const { getItems } = useDirectusItems();
+const { login, logout } = useDirectusAuth();
+const user = useDirectusUser();
 
-const fetchArticles = async () => {
+const onSubmit = async () => {
   try {
-    const items = await getItems({
-      collection: "product",
-    });
+    await login({ email: "teddy@mail.com", password: "123456" });
   } catch (e) {}
 };
 
