@@ -19,6 +19,7 @@ const { token } = useDirectusToken();
 const onSubmit = async () => {
   try {
     await login({ email: "teddy@mail.com", password: "123456" });
+    document.cookie ="Token=" + token.value + ";" + expires + ";path=/";
     console.log(token.value);
   } catch (e) {}
 };
