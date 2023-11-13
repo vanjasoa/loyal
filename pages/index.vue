@@ -3,6 +3,7 @@
         <p>
             {{ user }}
         </p>
+        <h1>{{ token }}</h1>
 
         <button @click="logout">logout</button>
         <button @click="onSubmit">login</button>
@@ -13,10 +14,12 @@
 
 const { login, logout } = useDirectusAuth();
 const user = useDirectusUser();
+const { token } = useDirectusToken();
 
 const onSubmit = async () => {
   try {
     await login({ email: "teddy@mail.com", password: "123456" });
+    console.log(token.value);
   } catch (e) {}
 };
 
