@@ -1,39 +1,46 @@
 <template>
-    <div>
-        <p>
-            {{ user }}
-        </p>
-        <h1>{{ token }}</h1>
-
-        <button @click="logout">logout</button>
-        <button @click="onSubmit">login</button>
-
-        <div>
-            <h1>Counter: {{ counter || '-' }}</h1>
-            <button @click="counter = null">reset</button>
-            <button @click="counter--">-</button>
-            <button @click="counter++">+</button>
-        </div>
-    </div>
+  <TopNavigationBar>
+            <template #logo >
+                <NuxtImg src="/logo.png" />
+            </template>
+        </TopNavigationBar>
+    <AuthButton @login="showAuth = 'login'" @register="showAuth = 'register'" />
+    <AuthCard v-if="showAuth" :show-auth="showAuth" @connexion="onSubmit" @register="onRegister" />
+    <ProjectDescriptionCard @call-to-action="showAuth = 'register'" v-else />
 </template>
 
 <script setup>
+const showAuth = ref(null)
+const { getItems } = useDirectusItems();
+const { login, createUser } = useDirectusAuth();
+const product = ref({})
+const router = useRouter();
+//const { createUsers } = useDirectusUsers();
 
-const { login, logout } = useDirectusAuth();
-const user = useDirectusUser();
-const { token } = useDirectusToken();
-const counter = useCookie('counter')
-const t = useCookie('refesh_token')
-
-counter.value = counter.value || Math.round(Math.random() * 1000)
-
-const onSubmit = async () => {
+const onSubmit = async (logindata) => {
     try {
-        await login({ email: "teddy@mail.com", password: "123456" });
-        document.cookie = "Token=" + token.value + ";" + expires + ";path=/";
-        t.value = token.value
-        console.log(token.value);
-    } catch (e) { }
+        await login({ email: logindata.email+'@mail.com', password: logindata.password });
+        router.push('/welcome')
+        
+    } catch (e) {
+        console.log(e)
+     }
+};
+
+const fetchProducts = async () => {
+  try {
+    
+    const items = await getItems({
+      collection: "product"
+    });
+    product.value = items
+  } catch (e) {}
+};
+
+const onRegister = async (registerdata) => {
+  try {
+    const newUser = await createUser({ email: registerdata.email+'@mail.com', password: registerdata.password, role: 'f8fc491a-643b-47fd-a929-18b4c6b35a17' });
+  } catch (e) {}
 };
 
 </script>
